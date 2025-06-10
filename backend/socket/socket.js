@@ -33,17 +33,21 @@ io.on("connection", (socket) => {
     msgID.set(socket.id, username);
     if (!onlineUsers.includes(username)) {
       onlineUsers.push(username);
-      const user = await prisma.users.findMany({
-        where: {
-          username: {
-            in: onlineUsers,
+      let user;
+      if (onlineUsers.length > 0 && !onlineUsers.includes(null)) {
+        user = await prisma.users.findMany({
+          where: {
+            username: {
+              in: onlineUsers,
+            },
           },
-        },
-        select: {
-          username: true,
-          profilePic: true,
-        },
-      });
+          select: {
+            username: true,
+            profilePic: true,
+          },
+        });
+      }
+
       socket.broadcast.emit("onlineUsers", user);
     }
   });
@@ -54,17 +58,20 @@ io.on("connection", (socket) => {
       user.delete(username);
       msgID.delete(socket.id);
       onlineUsers = onlineUsers.filter((user) => user !== username);
-      const users = await prisma.users.findMany({
-        where: {
-          username: {
-            in: onlineUsers,
+      let users;
+      if (onlineUsers.length > 0 && !onlineUsers.includes(null)) {
+        users = await prisma.users.findMany({
+          where: {
+            username: {
+              in: onlineUsers,
+            },
           },
-        },
-        select: {
-          username: true,
-          profilePic: true,
-        },
-      });
+          select: {
+            username: true,
+            profilePic: true,
+          },
+        });
+      }
       socket.broadcast.emit("onlineUsers", users);
     }
   });

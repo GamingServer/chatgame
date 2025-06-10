@@ -16,8 +16,10 @@ export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
 
+  
+
   useEffect(() => {
-    const socket = io("http://192.168.0.123:8080");
+    const socket = io("http://192.168.0.201:8080");
     socket.emit("join", authUser?.username);
 
     socket.on("receiveMessage", (data) => {

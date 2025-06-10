@@ -8,6 +8,10 @@ const signup = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const gender = req.body.gender;
+    if(!username || !email || !password || !gender){
+      res.status(400).json({ error: "Please fill out all fields." });
+      return;
+    }
 
     const user = await prisma.Users.findMany({
       where: {

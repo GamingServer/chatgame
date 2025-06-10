@@ -4,20 +4,39 @@ const prisma = new PrismaClient();
 const getAllUser = async (req, res) => {
   try {
     const username = req.body.username;
-    const allUser = await prisma.users.findMany({
+    const allUser = await prisma.teams.findMany({
       where: {
-        NOT: {
-          username: username,
+        members: {
+          some: {
+            username: username,
+          },
         },
       },
-      select: {
-        username: true,
-        id: true,
-        profilePic: true,
+      include: {
+        members: {
+          select: {
+            username: true,
+            profilePic: true,
+            id: true,
+          },
+        },
       },
     });
 
-    res.status(200).json(allUser);
+    const user = allUser.map((user) => user.members);
+
+    const uniqueUser = [
+      ...new Set(
+        user
+          .flat()
+          .filter(
+            (item, index, self) =>
+              index === self.findIndex((t) => t.id === item.id)
+          )
+      ),
+    ];
+
+    res.status(200).json(uniqueUser);
   } catch (error) {
     console.log("error in getAllUser", error);
     res.status(500).json({ error: "Internal server error" });

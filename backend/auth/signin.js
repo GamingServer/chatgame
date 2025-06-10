@@ -7,6 +7,11 @@ const signin = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    if (!email || !password) {
+      res.status(400).json({ error: "Please fill out all fields." });
+      return;
+    }
+
     const user = await prisma.Users.findUnique({
       where: {
         email: email,

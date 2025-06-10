@@ -3,7 +3,7 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
 const limit = rateLimit({
-  windowMs: 1000 * 60,
+  windowMs: 1000,
   max: 100,
   message: "to many request",
 });
