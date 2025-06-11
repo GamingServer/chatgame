@@ -64,6 +64,30 @@ const ChatBox = () => {
       year: "numeric",
     });
   };
+  const handleApprove = async (msg, isApprove) => {
+    console.log(msg);
+    
+    setSelectedUserMessages(
+      selectedUserMessages.map((m) =>
+        m.id === msg.id ? { ...m, isUsed: true } : m
+      )
+    );
+    await fetch("/api/game/ApprovePoints", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messageId: msg.id,
+        senderId: msg.senderId,
+        reciverId: msg.reciverId,
+        category: msg.category,
+        isApprove: isApprove,
+      }),
+    });
+
+    
+  };
 
   return (
     <div className="relative h-screen w-screen flex flex-col bg-bgColor1 dark:bg-color1">
@@ -108,6 +132,7 @@ const ChatBox = () => {
               }
               groupedMessages[dateLabel].push(msg);
             });
+            console.log(groupedMessages);
 
             return Object.entries(groupedMessages).map(
               ([dateLabel, messages]) => (
@@ -163,10 +188,35 @@ const ChatBox = () => {
                             <div className="size-3 rounded-full bg-p3" />
                           </div>
                         </div>
-                        <div className="flex flex-col gap-1">
-                          <p className="text-white bg-p2 dark:bg-p1 p-4 rounded-r-2xl rounded-bl-2xl text-xs max-w-[280px] break-words whitespace-normal">
+                        <div className="flex flex-col gap-1 max-w-[280px]">
+                          {msg.type === "approver" && !msg.isUsed && (
+                            <img
+                              src={`http://localhost:8080${msg.image}`}
+                              className="max-w-[260px] max-h-[280px] pt-3"
+                            />
+                          )}
+
+                          <p className="text-white bg-p2 dark:bg-p1 p-4 rounded-r-2xl rounded-bl-2xl text-xs break-words whitespace-normal">
                             {msg.message}
                           </p>
+
+                          {msg.type === "approver" && !msg.isUsed && (
+                            <div className="flex flex-row gap-1 h-10">
+                              <button
+                                className="bg-green-600 text-white w-full"
+                                onClick={() => handleApprove(msg, true)}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                className="bg-p1 text-white w-full"
+                                onClick={() => handleApprove(msg, false)}
+                              >
+                                Decline
+                              </button>
+                            </div>
+                          )}
+
                           <p className="text-xs text-color5">
                             {new Date(msg.createdAt).toLocaleTimeString([], {
                               hour: "2-digit",

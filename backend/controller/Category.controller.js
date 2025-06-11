@@ -103,12 +103,7 @@ const addCategory = async (req, res) => {
     if (existingCategory) {
       return res.status(400).json({ message: "Category already exists" });
     }
-    // const newCategory = new pointCategory({
-    //   category: category.trim(),
-    //   point: point,
-    //   isLimit: isLimit,
-    //   MaxPlayerLimit: MaxPlayerLimit,
-    // });
+    
     let newCategory;
     if (MaxPlayerLimit) {
       newCategory = await prisma.Category.create({
@@ -129,7 +124,6 @@ const addCategory = async (req, res) => {
       });
     }
 
-    // await newCategory.save();
     return res.json({
       message: "Category added successfully",
       newCategory: newCategory,

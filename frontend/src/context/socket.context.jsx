@@ -19,7 +19,7 @@ export const SocketContextProvider = ({ children }) => {
   
 
   useEffect(() => {
-    const socket = io("http://192.168.0.201:8080");
+    const socket = io("http://localhost:8080");
     socket.emit("join", authUser?.username);
 
     socket.on("receiveMessage", (data) => {
