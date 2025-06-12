@@ -1,3 +1,7 @@
 node_modules
-npm-debug.log
+dist
+.git
+Dockerfile
+README.md
+tests
 .env

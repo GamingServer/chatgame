@@ -3,8 +3,7 @@ const prisma = new PrismaClient();
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { connect } = require("http2");
-const { log } = require("console");
+const { io, getUserToken } = require("../socket/socket");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -320,7 +319,26 @@ const makeTeams = async (req, categoryData) => {
           },
         },
       },
+      include: {
+        members: {
+          select: {
+            username: true,
+            profilePic: true,
+            id: true,
+          },
+        },
+      },
     });
+    const leaderId = await prisma.Users.findUnique({
+      where: {
+        id: joinTeam.leaderId,
+      },
+    });
+    const leaderToken = getUserToken(leaderId.username);
+    const users = joinTeam.members.map((user) => user.username);
+    const socketIds = users.map((user) => getUserToken(user)).filter(Boolean);
+    if (leaderToken) socketIds.push(leaderToken);
+    io.to(socketIds).emit("newUser", joinTeam.members);
     return joinTeam;
   }
 };
@@ -336,7 +354,6 @@ const sendMessageToLeader = async (req, team, point) => {
       username: req.params.username,
     },
   });
-  console.log(req.params);
   if (userId.username === leaderId.username) {
     return;
   }
@@ -370,7 +387,7 @@ const sendMessageToLeader = async (req, team, point) => {
     },
   });
   if (newMessage) {
-    const conversation1 = await prisma.Conversations.update({
+    await prisma.Conversations.update({
       where: {
         id: conversation.id,
       },
@@ -381,6 +398,9 @@ const sendMessageToLeader = async (req, team, point) => {
       },
     });
   }
+
+  const leaderToken = getUserToken(leaderId.username);
+  if(leaderToken) io.to(leaderToken).emit("newMessage", newMessage);
 };
 
 module.exports = { ApprovePoints, isPlayerAlreadyPlayed, uploadPoints, upload };

@@ -6,14 +6,13 @@ import { useComponentContext } from "../context/component.context";
 import ChatBox from "./components/ChatBox";
 import BottemNevigation from "../Home/components/BottemNevigation";
 
+
 export default function MainChatPage() {
   const { allUser, setSelectedUser, selectedUser, lastMessage } =
     useComponentContext();
   const { onlineUsers } = useSocketContext();
   const { authUser } = useAuthContext();
-  console.log(onlineUsers);
 
-  // Assuming allUser and onlineUsers are arrays of objects with a username property
   const onlineUserLength = [
     ...new Set(
       allUser
@@ -21,8 +20,6 @@ export default function MainChatPage() {
         .map((user) => user.username)
     ),
   ].length;
-
-  console.log(onlineUserLength);
 
   return (
     <>
@@ -67,9 +64,9 @@ export default function MainChatPage() {
                 >
                   <path
                     fill="#000"
-                    fill-rule="evenodd"
+                    fillRule="evenodd"
                     d="M10 6.5a3.5 3.5 0 1 1-7 0a3.5 3.5 0 0 1 7 0m-.691 3.516a4.5 4.5 0 1 1 .707-.707l2.838 2.837a.5.5 0 0 1-.708.708z"
-                    clip-rule="evenodd"
+                    clipRule="evenodd"
                   />
                 </svg>{" "}
                 <input

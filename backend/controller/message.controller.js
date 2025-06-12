@@ -89,7 +89,7 @@ const sendMessage = async (req, res) => {
       const token = getUserToken(reciverName);
       if (token) {
         io.to(token).emit("receiveMessage", { message: newMessage });
-        io.to(token).emit("lastMessage", { message: newMessage });
+        io.to(token).emit("newMessage", { message: newMessage });
       }
 
       // Push notification

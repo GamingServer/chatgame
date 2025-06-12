@@ -65,14 +65,12 @@ const ChatBox = () => {
     });
   };
   const handleApprove = async (msg, isApprove) => {
-    console.log(msg);
-    
     setSelectedUserMessages(
       selectedUserMessages.map((m) =>
         m.id === msg.id ? { ...m, isUsed: true } : m
       )
     );
-    await fetch("/api/game/ApprovePoints", {
+    fetch("/api/game/ApprovePoints", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,9 +82,7 @@ const ChatBox = () => {
         category: msg.category,
         isApprove: isApprove,
       }),
-    });
-
-    
+    }).then((res) => console.log(res));
   };
 
   return (
@@ -132,7 +128,6 @@ const ChatBox = () => {
               }
               groupedMessages[dateLabel].push(msg);
             });
-            console.log(groupedMessages);
 
             return Object.entries(groupedMessages).map(
               ([dateLabel, messages]) => (
